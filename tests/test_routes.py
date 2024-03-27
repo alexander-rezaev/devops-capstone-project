@@ -167,3 +167,55 @@ class TestAccountService(TestCase):
 
         account_updated = response_new.get_json()
         self.assertEqual(account_updated["name"], name_new)
+    
+    def test_delete_an_account(self):
+        """It should delete an account"""
+        # create a fake account
+        account = AccountFactory()
+        response = self.client.post(
+            BASE_URL,
+            json=account.serialize(),
+            content_type="application/json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        account_created = response.get_json()
+        response = self.client.delete(
+            f"{BASE_URL}/{account_created['id']}"
+        )
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_delete_unexisting_account(self):
+        """It should get 404 with attempt to delete an unexisting account"""
+        account = AccountFactory()
+        response = self.client.post(
+            BASE_URL,
+            json=account.serialize(),
+            content_type="application/json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response = self.client.delete(
+            f"{BASE_URL}/0"
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_unexisting_account(self):
+        """It should try to update an unexisting account"""
+        # create a single account
+        account = AccountFactory()
+        response = self.client.post(
+            BASE_URL,
+            json=account.serialize(),
+            content_type="application/json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # update the existing account
+        name_new = "Joe Black"
+        account_new = response.get_json()
+        account_new["name"] = name_new
+        response_new = self.client.put(
+            f"{BASE_URL}/0",
+            json=account_new
+        )
+        self.assertEqual(response_new.status_code, status.HTTP_404_NOT_FOUND)
