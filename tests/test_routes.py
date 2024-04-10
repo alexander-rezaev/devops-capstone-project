@@ -28,6 +28,7 @@ HTTPS_ENVIRON = {'wsgi.url_scheme': 'https'}
 class TestAccountService(TestCase):
     """Account Service Tests"""
 
+
     @classmethod
     def setUpClass(cls):
         """Run once before all tests"""
@@ -125,7 +126,7 @@ class TestAccountService(TestCase):
             content_type="test/html"
         )
         self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
-    
+
     def test_read_an_account(self):
         """It should Read an account"""
         accounts = self._create_accounts(1)
@@ -168,7 +169,7 @@ class TestAccountService(TestCase):
 
         account_updated = response_new.get_json()
         self.assertEqual(account_updated["name"], name_new)
-    
+
     def test_delete_an_account(self):
         """It should delete an account"""
         # create a fake account
@@ -228,7 +229,7 @@ class TestAccountService(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
         self.assertEqual(len(data), len(accounts))
-    
+
     def test_security_headers(self):
         """It should return security headers"""
         response = self.client.get('/', environ_overrides=HTTPS_ENVIRON)
